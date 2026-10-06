@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="hi" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rasoi 3D — शाही रेसिपी स्टूडियो | Find Any Food Recipe with YouTube Video</title>
+  <meta name="description" content="Rasoi 3D is a luxury interactive food recipe platform. Search any dish, get full ingredients, step-by-step instructions, 3D visual effects, and direct 1-click YouTube video redirection.">
+  <meta name="keywords" content="food recipes, indian recipes, cooking videos, youtube food tutorials, biryani recipe, 3d recipe web app, rasoi">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Three.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/effects3d.css">
+</head>
+<body class="theme-dark">
+  <!-- 3D Three.js Floating Canvas -->
+  <canvas id="hero-3d-canvas" aria-hidden="true"></canvas>
+
+  <!-- Ambient Light Glow Orbs -->
+  <div class="ambient-glow glow-top-left"></div>
+  <div class="ambient-glow glow-top-right"></div>
+  <div class="ambient-glow glow-bottom"></div>
+
+  <!-- Main Navigation Header -->
+  <header class="site-header" id="main-header">
+    <div class="header-container">
+      <a href="#home" class="brand-logo" id="brand-logo" aria-label="Rasoi 3D Home">
+        <div class="logo-icon-3d">
+          <i class="fa-solid fa-fire-burner"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">RASOI<span class="highlight-3d">3D</span></span>
+          <span class="brand-tagline">शाही रेसिपी स्टूडियो</span>
+        </div>
+      </a>
+
+      <nav class="nav-menu" id="nav-menu" aria-label="Main Navigation">
+        <button class="nav-link active" data-filter="all" id="nav-explore">
+          <i class="fa-solid fa-compass"></i> Explore
+        </button>
+        <button class="nav-link" id="nav-bookmarks">
+          <i class="fa-solid fa-heart"></i> Favorites
+          <span class="badge-count" id="favorites-count">0</span>
+        </button>
+        <button class="nav-link" id="nav-surprise">
+          <i class="fa-solid fa-dice-d20"></i> Surprise Me
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Sound Toggle -->
+        <button class="icon-btn" id="sound-toggle-btn" title="Toggle UI Audio Effects" aria-label="Sound Toggle">
+          <i class="fa-solid fa-volume-high" id="sound-icon"></i>
+        </button>
+
+        <!-- Kitchen Timer Quick Button -->
+        <button class="btn-timer-pill" id="quick-timer-btn" title="Open Kitchen Timer">
+          <i class="fa-regular fa-clock"></i>
+          <span id="quick-timer-display">Timer</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Content -->
+  <main id="main-content">
+    <!-- Hero Section with 3D Depth & Search Bar -->
+    <section class="hero-section" id="home">
+      <div class="hero-container">
+        <div class="hero-badge animate-fade-in">
+          <span class="badge-sparkle">✨</span>
+          <span>शाही जायका, अब आपकी उंगलियों पर</span>
+        </div>
+
+        <h1 class="hero-heading animate-fade-up">
+          Find Any Recipe in Seconds.<br>
+          <span class="gradient-text">Cook with YouTube Guidance.</span>
+        </h1>
+
+        <p class="hero-subtitle animate-fade-up delay-1">
+          हज़ारों स्वादिष्ट भारतीय और अंतरराष्ट्रीय व्यंजनों की विस्तृत विधि, सामग्री की सूची, और सीधे यूट्यूब वीडियो ट्यूटोरियल।
+        </p>
+
+        <!-- Search Bar with 3D Border & Glow -->
+        <div class="search-wrapper animate-fade-up delay-2">
+          <div class="search-box-3d" id="search-box-3d">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input 
+              type="text" 
+              id="recipe-search-input" 
+              placeholder="Search dishes... e.g. Biryani, Butter Chicken, Paneer, Pasta, Cake" 
+              autocomplete="off" 
+              aria-label="Search food recipes"
+            >
+            <button class="search-clear-btn" id="search-clear-btn" title="Clear search" aria-label="Clear Search">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+            <button class="voice-search-btn" id="voice-search-btn" title="Search with your voice (बोलकर सर्च करें)" aria-label="Voice Search">
+              <i class="fa-solid fa-microphone"></i>
+              <span class="voice-pulse-ring"></span>
+            </button>
+            <button class="search-action-btn" id="search-submit-btn" aria-label="Submit search">
+              <span>Search</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <!-- Live Voice Listening Feedback Overlay -->
+          <div class="voice-feedback" id="voice-feedback">
+            <span class="voice-wave"></span>
+            <span class="voice-wave"></span>
+            <span class="voice-wave"></span>
+            <span id="voice-status-text">Listening... Bolyein kaunsi recipe chahiye!</span>
+          </div>
+
+          <!-- Quick Cuisine Suggestions -->
+          <div class="popular-queries">
+            <span class="popular-label"><i class="fa-solid fa-fire"></i> Popular:</span>
+            <button class="query-chip" data-query="Biryani">Biryani</button>
+            <button class="query-chip" data-query="Paneer">Paneer</button>
+            <button class="query-chip" data-query="Butter Chicken">Butter Chicken</button>
+            <button class="query-chip" data-query="Pasta">Pasta</button>
+            <button class="query-chip" data-query="Chocolate Cake">Cake</button>
+            <button class="query-chip" data-query="Pizza">Pizza</button>
+            <button class="query-chip" data-query="Dal Makhani">Dal Makhani</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category Filters Scrollable Shelf -->
+    <section class="category-shelf-section">
+      <div class="shelf-container">
+        <div class="category-scroll-wrapper" id="category-scroll-wrapper">
+          <button class="category-card-3d active" data-category="all" id="cat-all">
+            <span class="cat-icon">🍽️</span>
+            <span class="cat-name">All Recipes</span>
+          </button>
+          <button class="category-card-3d" data-category="Indian" id="cat-indian">
+            <span class="cat-icon">🍛</span>
+            <span class="cat-name">Indian Desi</span>
+          </button>
+          <button class="category-card-3d" data-category="Chicken" id="cat-chicken">
+            <span class="cat-icon">🍗</span>
+            <span class="cat-name">Chicken</span>
+          </button>
+          <button class="category-card-3d" data-category="Vegetarian" id="cat-veg">
+            <span class="cat-icon">🥬</span>
+            <span class="cat-name">Vegetarian</span>
+          </button>
+          <button class="category-card-3d" data-category="Dessert" id="cat-dessert">
+            <span class="cat-icon">🍰</span>
+            <span class="cat-name">Desserts & Sweets</span>
+          </button>
+          <button class="category-card-3d" data-category="Seafood" id="cat-seafood">
+            <span class="cat-icon">🍤</span>
+            <span class="cat-name">Seafood</span>
+          </button>
+          <button class="category-card-3d" data-category="Pasta" id="cat-pasta">
+            <span class="cat-icon">🍝</span>
+            <span class="cat-name">Pasta & Italian</span>
+          </button>
+          <button class="category-card-3d" data-category="Breakfast" id="cat-breakfast">
+            <span class="cat-icon">🥞</span>
+            <span class="cat-name">Breakfast</span>
+          </button>
+          <button class="category-card-3d" data-category="Side" id="cat-snacks">
+            <span class="cat-icon">🍟</span>
+            <span class="cat-name">Snacks & Sides</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recipe Gallery & Results Section -->
+    <section class="recipes-section" id="recipes-section">
+      <div class="section-header-row">
+        <div class="header-left">
+          <h2 class="section-title" id="results-title">
+            <span class="title-accent"></span> Featured Royal Dishes
+          </h2>
+          <p class="section-subtitle" id="results-count">Showing signature curated recipes</p>
+        </div>
+
+        <div class="header-right">
+          <!-- Sort / Filter Dropdown -->
+          <div class="custom-select-wrapper">
+            <select id="sort-filter-select" aria-label="Sort and filter recipes">
+              <option value="featured">✨ Featured Selection</option>
+              <option value="az">🔤 Name (A - Z)</option>
+              <option value="za">🔤 Name (Z - A)</option>
+              <option value="has-video">🎥 Video Recipes Only</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State with 3D Spinner -->
+      <div class="loading-state-container" id="loading-spinner" style="display: none;">
+        <div class="spinner-3d-pot">
+          <div class="pot-circle"></div>
+          <div class="pot-flame"></div>
+          <i class="fa-solid fa-utensils spinner-icon"></i>
+        </div>
+        <p class="loading-text">रसोई की महक आ रही है... Loading Recipes...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state-container" id="empty-state" style="display: none;">
+        <div class="empty-icon-3d">🍲</div>
+        <h3>Oops! Koi Recipe Nahi Mili</h3>
+        <p>Aapne jo search kiya wo abhi database me nahi mila. Dusra naam search karke dekhein!</p>
+        <button class="btn-primary" id="empty-reset-btn">
+          <i class="fa-solid fa-rotate-left"></i> Reset Search
+        </button>
+      </div>
+
+      <!-- 3D Recipe Cards Grid -->
+      <div class="recipe-grid-3d" id="recipe-grid">
+        <!-- Recipe cards populated dynamically via JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- 3D RECIPE DETAILS MODAL (The Royal Recipe Studio)       -->
+  <!-- ======================================================== -->
+  <div class="modal-backdrop" id="recipe-modal-backdrop" aria-hidden="true">
+    <div class="recipe-modal-3d" id="recipe-modal" role="dialog" aria-modal="true" aria-labelledby="modal-recipe-title">
+      <!-- Close Button -->
+      <button class="modal-close-btn" id="modal-close-btn" aria-label="Close recipe details">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Modal Content Container -->
+      <div class="modal-inner-scroll">
+        <!-- Hero Banner of Modal -->
+        <div class="modal-hero-grid">
+          <div class="modal-image-col">
+            <div class="modal-img-frame-3d" id="modal-img-frame">
+              <img src="" alt="Recipe image" id="modal-recipe-img" loading="lazy">
+              <div class="img-glare-effect"></div>
+              <span class="modal-cuisine-badge" id="modal-recipe-cuisine">🇮🇳 Indian</span>
+              <button class="modal-fav-btn" id="modal-fav-btn" title="Bookmark Recipe">
+                <i class="fa-regular fa-heart"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="modal-info-col">
+            <div class="modal-tags" id="modal-recipe-tags">
+              <!-- Category & tags -->
+            </div>
+            <h2 class="modal-title" id="modal-recipe-title">Dish Name</h2>
+            <p class="modal-area-desc" id="modal-recipe-meta">
+              <span id="modal-category-text"><i class="fa-solid fa-bowl-food"></i> Main Course</span>
+              <span class="dot">•</span>
+              <span id="modal-time-est"><i class="fa-regular fa-clock"></i> 35 Mins</span>
+              <span class="dot">•</span>
+              <span id="modal-servings"><i class="fa-solid fa-user-group"></i> 4 Servings</span>
+            </p>
+
+            <!-- ==================================================== -->
+            <!-- 🌟 YOUTUBE HIGHLIGHTED REDIRECTION BANNER            -->
+            <!-- ==================================================== -->
+            <div class="youtube-highlight-card-3d" id="youtube-banner-card">
+              <div class="yt-badge-row">
+                <div class="yt-live-indicator">
+                  <span class="yt-pulse"></span>
+                  <i class="fa-brands fa-youtube yt-logo-icon"></i>
+                  <span class="yt-title-tag">YouTube Video Tutorial</span>
+                </div>
+                <span class="yt-guarantee-pill">HD Step-by-Step</span>
+              </div>
+
+              <p class="yt-help-text">
+                <i class="fa-solid fa-circle-question"></i>
+                <strong>Recipe samajh nahi aayi?</strong> Fikar na karein! Sidha YouTube par chef ki live cooking video dekhein aur bina kisi galti ke banayein:
+              </p>
+
+              <div class="yt-actions-row">
+                <!-- Primary Direct Redirection Button -->
+                <a href="#" target="_blank" rel="noopener noreferrer" class="btn-youtube-redirect-3d" id="modal-yt-redirect-btn">
+                  <i class="fa-brands fa-youtube"></i>
+                  <span>Watch on YouTube <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                </a>
+
+                <!-- Inline Video Preview Toggle -->
+                <button class="btn-yt-preview" id="modal-yt-preview-btn">
+                  <i class="fa-solid fa-play"></i>
+                  <span>Watch Here (Inline)</span>
+                </button>
+              </div>
+
+              <!-- Inline Video Player Container (Hidden by default, expandable) -->
+              <div class="yt-player-container" id="yt-player-container" style="display: none;">
+                <div class="player-wrapper">
+                  <iframe 
+                    id="modal-yt-iframe" 
+                    src="" 
+                    title="YouTube video player" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Modal Action Bar -->
+            <div class="modal-quick-actions">
+              <button class="action-chip" id="start-cooking-mode-btn">
+                <i class="fa-solid fa-hat-chef"></i> Start Interactive Cooking Mode
+              </button>
+              <button class="action-chip" id="copy-ingredients-btn">
+                <i class="fa-solid fa-copy"></i> Copy Ingredients List
+              </button>
+              <button class="action-chip" id="share-recipe-btn">
+                <i class="fa-solid fa-share-nodes"></i> Share
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recipe Content Tabs / Dual Grid -->
+        <div class="modal-body-grid">
+          <!-- Ingredients Column -->
+          <div class="ingredients-column">
+            <div class="column-header">
+              <h3><i class="fa-solid fa-basket-shopping"></i> Required Ingredients (सामग्री)</h3>
+              <span class="count-pill" id="ingredients-count-pill">0 items</span>
+            </div>
+            <p class="ing-instruction-hint">Cook karte waqt items ko tick karein taaki kuch chhut na jaye:</p>
+            <div class="ingredients-checklist" id="modal-ingredients-list">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Step-by-Step Instructions Column -->
+          <div class="instructions-column">
+            <div class="column-header">
+              <h3><i class="fa-solid fa-kitchen-set"></i> Cooking Method (बनाने की विधि)</h3>
+              <button class="timer-shortcut-btn" id="step-timer-shortcut">
+                <i class="fa-solid fa-stopwatch"></i> Quick Timer
+              </button>
+            </div>
+
+            <div class="steps-container" id="modal-steps-list">
+              <!-- Steps rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- CHEF / INTERACTIVE COOKING MODE MODAL                    -->
+  <!-- ======================================================== -->
+  <div class="cooking-mode-modal" id="cooking-mode-modal" aria-hidden="true">
+    <div class="cooking-mode-card">
+      <div class="cooking-header">
+        <div class="cooking-dish-info">
+          <span class="chef-badge"><i class="fa-solid fa-fire"></i> CHEF COOKING MODE</span>
+          <h3 id="cooking-mode-dish-name">Lamb Biryani</h3>
+        </div>
+        <button class="close-cooking-btn" id="close-cooking-mode-btn" aria-label="Exit Cooking Mode">
+          <i class="fa-solid fa-xmark"></i> Exit Mode
+        </button>
+      </div>
+
+      <div class="cooking-progress-bar">
+        <div class="progress-fill" id="cooking-progress-fill" style="width: 20%;"></div>
+      </div>
+
+      <div class="cooking-step-body">
+        <span class="step-indicator" id="cooking-step-indicator">Step 1 of 6</span>
+        <div class="step-text-display" id="cooking-step-text">
+          Loading step instructions...
+        </div>
+      </div>
+
+      <div class="cooking-footer-controls">
+        <button class="btn-cooking-nav" id="cooking-prev-btn" disabled>
+          <i class="fa-solid fa-chevron-left"></i> Previous Step
+        </button>
+        <div class="step-dots-row" id="cooking-step-dots"></div>
+        <button class="btn-cooking-nav primary" id="cooking-next-btn">
+          Next Step <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- KITCHEN TIMER FLOATING DRAWER                           -->
+  <!-- ======================================================== -->
+  <div class="kitchen-timer-drawer" id="kitchen-timer-drawer">
+    <div class="timer-drawer-header">
+      <h4><i class="fa-solid fa-hourglass-half"></i> Kitchen Timer</h4>
+      <button class="drawer-close" id="close-timer-drawer"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="timer-time-display" id="timer-display-big">05:00</div>
+    <div class="timer-preset-btns">
+      <button class="timer-preset" data-seconds="180">3 Min (Tea)</button>
+      <button class="timer-preset active" data-seconds="300">5 Min (Boil)</button>
+      <button class="timer-preset" data-seconds="600">10 Min (Simmer)</button>
+      <button class="timer-preset" data-seconds="900">15 Min (Dum/Roast)</button>
+    </div>
+    <div class="timer-controls">
+      <button class="btn-timer-action" id="start-pause-timer-btn">
+        <i class="fa-solid fa-play"></i> Start
+      </button>
+      <button class="btn-timer-reset" id="reset-timer-btn">
+        <i class="fa-solid fa-rotate-left"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <span class="brand-title">RASOI<span class="highlight-3d">3D</span></span>
+        <p>Premium 3D Recipe Experience with Direct YouTube Cooking Tutorials.</p>
+      </div>
+      <div class="footer-links">
+        <span>Made with ❤️ for Food Lovers</span>
+        <span>•</span>
+        <a href="#home">Back to Top ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/soundEffects.js"></script>
+  <script src="js/threeScene.js"></script>
+  <script src="js/tiltEffect.js"></script>
+  <script src="js/voiceSearch.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+/* ==========================================================================
+   RASOI 3D — Advanced 3D Effects, Tilt, Specular Glare & Perspective Engine
+   ========================================================================== */
+
+/* Three.js Background Canvas */
+#hero-3d-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+/* 3D Perspective Context */
+.perspective-container {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+/* 3D Card Interactive Tilt Physics */
+.tilt-card {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.12s ease-out, box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+/* Dynamic Specular Mouse Glare Effect */
+.card-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.22) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  mix-blend-mode: overlay;
+  z-index: 5;
+}
+
+.recipe-card-3d:hover .card-glare {
+  opacity: 1;
+}
+
+/* Depth Layers inside cards */
+.depth-layer-base {
+  transform: translateZ(0px);
+}
+
+.depth-layer-mid {
+  transform: translateZ(15px);
+}
+
+.depth-layer-high {
+  transform: translateZ(30px);
+}
+
+.depth-layer-floating {
+  transform: translateZ(45px);
+}
+
+/* Floating Animations for 3D elements */
+@keyframes float3D {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.float-element {
+  animation: float3D 4s ease-in-out infinite;
+}
+
+/* Entrance Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-up {
+  opacity: 0;
+  animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.delay-1 {
+  animation-delay: 0.15s;
+}
+
+.delay-2 {
+  animation-delay: 0.3s;
+}
+
+.delay-3 {
+  animation-delay: 0.45s;
+}
+
+/* Shimmer Highlight Effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-active {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s infinite;
+}
+
+/* Glassmorphism Surface Filters */
+.glass-panel {
+  background: rgba(18, 22, 33, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-elevated {
+  background: rgba(25, 30, 45, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+}
+
+/* Pulse animation for YouTube live badge */
+@keyframes redPulseRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(255, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}
+
+.btn-youtube-redirect-3d {
+  animation: redPulseRing 2.4s infinite;
+}
